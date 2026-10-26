@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Despacho NÜVEX</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        /* ANIMACIONES */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes drive {
+            0%, 100% {
+                transform: translateX(0) translateY(0);
+            }
+            25% {
+                transform: translateX(2px) translateY(-1px);
+            }
+            50% {
+                transform: translateX(0) translateY(0);
+            }
+            75% {
+                transform: translateX(-2px) translateY(-1px);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -200% center;
+            }
+            100% {
+                background-position: 200% center;
+            }
+        }
+        
+        @keyframes glowText {
+            0%, 100% {
+                text-shadow: 0 0 4px rgba(169, 0, 255, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 12px rgba(169, 0, 255, 0.7), 0 0 20px rgba(169, 0, 255, 0.4);
+            }
+        }
+        
+        @keyframes windLine {
+            0% {
+                transform: translateX(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-30px);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes alertPulse {
+            0%, 100% {
+                background-color: #FF3B30;
+                transform: scale(1);
+            }
+            50% {
+                background-color: #FF6B6B;
+                transform: scale(1.02);
+            }
+        }
+        
+        @keyframes moonFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-3px) rotate(5deg);
+            }
+        }
+        
+        .nuvex-despacho-container {
+            background: linear-gradient(135deg, #F8F9FF 0%, #FFFFFF 100%);
+            border: 1px solid rgba(8, 124, 255, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            padding-bottom: 100px;
+            box-shadow: 0 4px 12px rgba(8, 124, 255, 0.08);
+            width: 100%;
+            max-width: 780px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nuvex-despacho-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(8, 124, 255, 0.3) 25%, 
+                rgba(22, 217, 232, 0.8) 50%, 
+                rgba(169, 0, 255, 0.3) 75%, 
+                transparent 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        .nuvex-despacho-main {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #FFFFFF;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 16px;
+            border-left: 4px solid #087CFF;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .nuvex-despacho-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(8, 124, 255, 0.15);
+        }
+        
+        .nuvex-icon-container {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            background: rgba(8, 124, 255, 0.08);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .nuvex-icon-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background: #16D9E8;
+            border-radius: 50%;
+            border: 2px solid #FFFFFF;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        /* Líneas de viento/movimiento */
+        .wind-lines {
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 20px;
+            pointer-events: none;
+        }
+        
+        .wind-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(8, 124, 255, 0.4), transparent);
+            border-radius: 2px;
+            animation: windLine 1.5s ease-in-out infinite;
+        }
+        
+        .wind-line:nth-child(1) {
+            top: 20%;
+            width: 20px;
+            animation-delay: 0s;
+        }
+        
+        .wind-line:nth-child(2) {
+            top: 50%;
+            width: 25px;
+            animation-delay: 0.3s;
+        }
+        
+        .wind-line:nth-child(3) {
+            top: 80%;
+            width: 18px;
+            animation-delay: 0.6s;
+        }
+        
+        .nuvex-truck-icon {
+            width: 24px;
+            height: 24px;
+            fill: #087CFF;
+            animation: drive 2s ease-in-out infinite;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .nuvex-despacho-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: #080808;
+            margin: 0;
+            line-height: 1.4;
+        }
+        
+        .nuvex-dia-despacho {
+            color: #A900FF;
+            font-weight: 800;
+            text-transform: uppercase;
+            display: inline-block;
+            animation: glowText 2.5s ease-in-out infinite;
+            padding: 0 4px;
+        }
+        
+        /* CONTADOR REGRESIVO */
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(8, 124, 255, 0.1);
+        }
+        
+        .countdown-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+        }
+        
+        .countdown-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: #FF3B30;
+            line-height: 1;
+            background: #FFFFFF;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(255, 59, 48, 0.15);
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .countdown-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px;
+            color: #666;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .countdown-separator {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #FF3B30;
+            margin: 0 4px;
+            align-self: flex-start;
+            margin-top: 12px;
+        }
+        
+        .countdown-info {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+            margin: 12px 0 0 0;
+            line-height: 1.4;
+        }
+        
+        /* ALERTA ÚLTIMA HORA */
+        .urgent-alert {
+            background: #FF3B30;
+            color: #FFFFFF;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 16px 0;
+            animation: alertPulse 2s ease-in-out infinite;
+            box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+            display: none;
+        }
+        
+        .urgent-alert.show {
+            display: block;
+        }
+        
+        /* EASTER EGG NOCTURNO */
+        .night-owl-message {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #FFFFFF;
+            padding: 16px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 16px 0;
+            border: 1px solid rgba(169, 0, 255, 0.3);
+            display: none;
+        }
+        
+        .night-owl-message.show {
+            display: block;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .night-owl-message .moon-icon {
+            font-size: 24px;
+            display: inline-block;
+            animation: moonFloat 3s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        .night-owl-message .code-highlight {
+            background: rgba(169, 0, 255, 0.3);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            color: #16D9E8;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 1px;
+        }
+        
+        /* RESPONSIVE */
+        @media screen and (max-width: 600px) {
+            .nuvex-despacho-container {
+                padding: 18px;
+                padding-bottom: 90px;
+                border-radius: 12px;
+            }
+            
+            .nuvex-despacho-main {
+                padding: 14px 16px;
+                gap: 12px;
+            }
+            
+            .nuvex-icon-container {
+                width: 42px;
+                height: 42px;
+            }
+            
+            .nuvex-truck-icon {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .nuvex-despacho-text {
+                font-size: 15px;
+            }
+            
+            .countdown-value {
+                font-size: 26px;
+                padding: 10px 12px;
+                min-width: 50px;
+            }
+            
+            .countdown-separator {
+                font-size: 22px;
+            }
+            
+            .countdown-container {
+                gap: 8px;
+                padding: 12px;
+            }
+        }
+        
+        @media screen and (max-width: 400px) {
+            .nuvex-despacho-container {
+                padding: 14px;
+                padding-bottom: 85px;
+            }
+            
+            .nuvex-despacho-text {
+                font-size: 14px;
+            }
+            
+            .nuvex-icon-container {
+                width: 38px;
+                height: 38px;
+            }
+            
+            .countdown-value {
+                font-size: 22px;
+                padding: 8px 10px;
+                min-width: 44px;
+            }
+            
+            .countdown-separator {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nuvex-despacho-container">
+        <div class="nuvex-despacho-main">
+            <div class="nuvex-icon-container">
+                <div class="wind-lines">
+                    <div class="wind-line"></div>
+                    <div class="wind-line"></div>
+                    <div class="wind-line"></div>
+                </div>
+                <svg class="nuvex-truck-icon" viewBox="0 0 24 24">
+                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                </svg>
+            </div>
+            <p class="nuvex-despacho-text">
+                🚚 Despachamos tu pedido <span class="nuvex-dia-despacho" id="nuvexDiaDespacho">HOY</span> si comprás en las próximas
+            </p>
+        </div>
+        
+        <!-- ALERTA ÚLTIMA HORA -->
+        <div class="urgent-alert" id="urgentAlert">
+            ⚡ ¡ÚLTIMOS LUGARES PARA DESPACHAR HOY! ⚡
+        </div>
+        
+        <!-- CONTADOR REGRESIVO -->
+        <div class="countdown-container">
+            <div class="countdown-box">
+                <div class="countdown-value" id="countdownHours">00</div>
+                <div class="countdown-label">HS</div>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-box">
+                <div class="countdown-value" id="countdownMinutes">00</div>
+                <div class="countdown-label">MIN</div>
+            </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-box">
+                <div class="countdown-value" id="countdownSeconds">00</div>
+                <div class="countdown-label">SEG</div>
+            </div>
+        </div>
+        
+        <p class="countdown-info">
+            Corte diario a las 13:00 hs (hora Argentina)
+        </p>
+        
+        <!-- EASTER EGG NOCTURNO -->
+        <div class="night-owl-message" id="nightOwlMessage">
+            <span class="moon-icon">🌙</span>
+            ¿Comprando de madrugada? Usá el código <span class="code-highlight">MADRUGADOR</span> y obtené envío gratis en tu pedido
+        </div>
+    </div>
+
+    <script>
+        function actualizarWidget() {
+            const ahora = new Date();
+            const offsetArgentina = -3 * 60;
+            const utc = ahora.getTime() + (ahora.getTimezoneOffset() * 60000);
+            const horaArgentina = new Date(utc + (offsetArgentina * 60000));
+
+            const diaSemana = horaArgentina.getDay();
+            const hora = horaArgentina.getHours();
+            const minutos = horaArgentina.getMinutes();
+            const segundos = horaArgentina.getSeconds();
+
+            const dias = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
+            let diaDespacho = '';
+            let fechaDespacho = new Date(horaArgentina);
+
+            // Lógica de días de despacho
+            if (diaSemana >= 1 && diaSemana <= 5) { // Lunes a Viernes
+                if (hora < 13) {
+                    // Antes de las 13:00 - Despacha HOY
+                    diaDespacho = 'HOY';
+                    // Fecha de despacho es hoy a las 13:00
+                    fechaDespacho.setHours(13, 0, 0, 0);
+                } else {
+                    // Después de las 13:00
+                    if (diaSemana === 5) {
+                        // Viernes después de las 13:00 - Despacha el próximo lunes
+                        diaDespacho = 'EL PRÓXIMO LUNES';
+                        fechaDespacho.setDate(fechaDespacho.getDate() + 3); // +3 días = lunes
+                        fechaDespacho.setHours(13, 0, 0, 0);
+                    } else {
+                        // Lunes a Jueves después de las 13:00 - Despacha mañana
+                        diaDespacho = 'MAÑANA';
+                        fechaDespacho.setDate(fechaDespacho.getDate() + 1);
+                        fechaDespacho.setHours(13, 0, 0, 0);
+                    }
+                }
+            } else {
+                // Sábado o Domingo - Despacha el próximo lunes
+                diaDespacho = 'EL PRÓXIMO LUNES';
+                const diasHastaLunes = diaSemana === 6 ? 2 : 1; // Sábado=2, Domingo=1
+                fechaDespacho.setDate(fechaDespacho.getDate() + diasHastaLunes);
+                fechaDespacho.setHours(13, 0, 0, 0);
+            }
+
+            // Actualizar texto del día
+            document.getElementById('nuvexDiaDespacho').textContent = diaDespacho;
+
+            // Calcular tiempo restante
+            const tiempoRestante = fechaDespacho.getTime() - horaArgentina.getTime();
+            
+            if (tiempoRestante > 0) {
+                const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
+                const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((tiempoRestante % (1000 * 60)) / 1000);
+
+                document.getElementById('countdownHours').textContent = horas.toString().padStart(2, '0');
+                document.getElementById('countdownMinutes').textContent = minutos.toString().padStart(2, '0');
+                document.getElementById('countdownSeconds').textContent = segundos.toString().padStart(2, '0');
+
+                // Mostrar alerta si queda 1 hora o menos
+                const alertElement = document.getElementById('urgentAlert');
+                if (horas < 1 && diaSemana >= 1 && diaSemana <= 5 && hora < 13) {
+                    alertElement.classList.add('show');
+                } else {
+                    alertElement.classList.remove('show');
+                }
+            } else {
+                // Si el tiempo ya pasó, mostrar 00:00:00
+                document.getElementById('countdownHours').textContent = '00';
+                document.getElementById('countdownMinutes').textContent = '00';
+                document.getElementById('countdownSeconds').textContent = '00';
+                document.getElementById('urgentAlert').classList.remove('show');
+            }
+
+            // Easter Egg nocturno (01:00 a 05:00)
+            const nightOwlElement = document.getElementById('nightOwlMessage');
+            if (hora >= 1 && hora < 5) {
+                nightOwlElement.classList.add('show');
+            } else {
+                nightOwlElement.classList.remove('show');
+            }
+        }
+
+        // Ejecutar al cargar
+        actualizarWidget();
+
+        // Actualizar cada segundo
+        setInterval(actualizarWidget, 1000);
+    </script>
+</body>
+</html>
